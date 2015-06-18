@@ -1,0 +1,48 @@
+How do I properly preload an external library?!
+
+
+
+Case 1, this gets the system correct, but fails to get the local....
+
+
+karlp@pojak:~/src/busted-how (master *)$ busted 
+setup system uci.confdir = /etc/config
+uci= table: 0x2674370, confdir=/etc/config
+●teardown system uci.confdir = /etc/config
+setup local uci.confdir = /etc/config
+uci= table: 0x26e0a00, confdir=/home/karlp/src/busted-how/confdir
+◼teardown local uci.confdir = /home/karlp/src/busted-how/confdir
+
+1 success / 1 failure / 0 errors / 0 pending : 0.002827 seconds
+
+Failure → spec/local_spec.lua @ 12
+should only see local confdir do styuff
+spec/local_spec.lua:14: Expected objects to be the same.
+Passed in:
+(string) 'from_system_config'
+Expected:
+(string) 'from_local_config'
+
+
+
+
+case 2, this gets the local correct, but fails to get the system...
+
+karlp@pojak:~/src/busted-how (master *)$ busted --sort
+setup local uci.confdir = /etc/config
+uci= table: 0x9d3ff0, confdir=/home/karlp/src/busted-how/confdir
+●teardown local uci.confdir = /home/karlp/src/busted-how/confdir
+setup system uci.confdir = /home/karlp/src/busted-how/confdir
+uci= table: 0xa446e0, confdir=/home/karlp/src/busted-how/confdir
+◼teardown system uci.confdir = /home/karlp/src/busted-how/confdir
+
+1 success / 1 failure / 0 errors / 0 pending : 0.003538 seconds
+
+Failure → spec/system_spec.lua @ 12
+should see system confdir do styuff
+spec/system_spec.lua:14: Expected objects to be the same.
+Passed in:
+(string) 'from_local_config'
+Expected:
+(string) 'from_system_config'
+karlp@pojak:~/src/busted-how (master *)$
